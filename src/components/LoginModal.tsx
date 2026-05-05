@@ -9,11 +9,24 @@ import { useAuth } from "../context/AuthContext";
 export default function LoginModal() {
   const { isLoginOpen, closeLogin, login, isLoading } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    await login(form);
-    setForm({ email: "", password: "" });
+    setError("");
+    try {
+      await login(form);
+      setForm({ email: "", password: "" });
+    } catch (err: any) {
+      const code = err?.code || "";
+      if (code === "auth/user-not-found" || code === "auth/wrong-password" || code === "auth/invalid-credential") {
+        setError("Invalid email or password.");
+      } else if (code === "auth/too-many-requests") {
+        setError("Too many attempts. Please try again later.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    }
   }
 
   return (
@@ -45,6 +58,11 @@ export default function LoginModal() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                  {error}
+                </div>
+              )}
               <label className="block">
                 <span className="mb-2 block text-sm muted-copy">Email</span>
                 <input

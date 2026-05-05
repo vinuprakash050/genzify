@@ -9,11 +9,26 @@ export default function LoginPage() {
   const router = useRouter();
   const { login, isLoading } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    await login(form);
-    router.push("/account");
+    setError("");
+    try {
+      await login(form);
+      router.push("/account");
+    } catch (err: any) {
+      const code = err?.code || "";
+      if (code === "auth/user-not-found" || code === "auth/wrong-password" || code === "auth/invalid-credential") {
+        setError("Invalid email or password.");
+      } else if (code === "auth/too-many-requests") {
+        setError("Too many attempts. Please try again later.");
+      } else if (code === "auth/invalid-email") {
+        setError("Please enter a valid email address.");
+      } else {
+        setError(err?.message || "Something went wrong. Please try again.");
+      }
+    }
   }
 
   return (
@@ -26,6 +41,11 @@ export default function LoginPage() {
       footerLinkTo="/register"
       form={
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+              {error}
+            </div>
+          )}
           <label className="block">
             <span className="mb-2 block text-sm muted-copy">Email</span>
             <input
@@ -59,6 +79,14 @@ export default function LoginPage() {
           >
             {isLoading ? "Signing in..." : "Login"}
           </button>
+          <div className="flex items-center justify-between text-sm">
+            <a href="/forgot-password" className="text-secondary">
+              Forgot password?
+            </a>
+            <a href="/register" className="text-primary">
+              Create account
+            </a>
+          </div>
         </form>
       }
     />

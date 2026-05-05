@@ -1,32 +1,28 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCo4td_RewGLvXvmnzbAX0UkYsi93DNDlg",
-  authDomain: "genzify-b0d97.firebaseapp.com",
-  projectId: "genzify-b0d97",
-  storageBucket: "genzify-b0d97.firebasestorage.app",
-  messagingSenderId: "418857765876",
-  appId: "1:418857765876:web:947b21c27e89f79ed187a1",
-  measurementId: "G-R0SRET9WZY"
+  apiKey: "AIzaSyA1JZcbmfQNj-_fvrtbelpvuTJO6rK4CHg",
+  authDomain: "react-tee-redux.firebaseapp.com",
+  projectId: "react-tee-redux",
+  storageBucket: "react-tee-redux.firebasestorage.app",
+  messagingSenderId: "303940470010",
+  appId: "1:303940470010:web:754401d1878d8398597543",
+  measurementId: "G-H8WRFD7THE",
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Prevent duplicate app initialization (happens in Next.js dev with hot reload)
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-// Initialize Firebase services
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 
-// Initialize Analytics only on client side
 export const getAnalytics = () => {
-  if (typeof window !== 'undefined') {
-    return import('firebase/analytics').then(({ getAnalytics }) => getAnalytics(app));
+  if (typeof window !== "undefined") {
+    return import("firebase/analytics").then(({ getAnalytics }) => getAnalytics(app));
   }
   return null;
 };

@@ -127,8 +127,12 @@ export const productService = {
 // User Services
 export const userService = {
   async createUser(user: Omit<FirestoreUser, 'id'>): Promise<string> {
+    // Strip undefined values — Firestore doesn't accept them
+    const cleanUser = Object.fromEntries(
+      Object.entries(user).filter(([_, v]) => v !== undefined)
+    );
     const docRef = await addDoc(usersCollection, {
-      ...user,
+      ...cleanUser,
       role: 'user',
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now()

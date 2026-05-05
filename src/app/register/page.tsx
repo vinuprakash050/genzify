@@ -9,11 +9,27 @@ export default function RegisterPage() {
   const router = useRouter();
   const { register, isLoading } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [error, setError] = useState("");
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    await register(form);
-    router.push("/account");
+    setError("");
+    try {
+      await register(form);
+      router.push("/account");
+    } catch (err: any) {
+      // Map Firebase error codes to readable messages
+      const code = err?.code || "";
+      if (code === "auth/email-already-in-use") {
+        setError("An account with this email already exists.");
+      } else if (code === "auth/weak-password") {
+        setError("Password must be at least 6 characters.");
+      } else if (code === "auth/invalid-email") {
+        setError("Please enter a valid email address.");
+      } else {
+        setError(err?.message || "Something went wrong. Please try again.");
+      }
+    }
   }
 
   return (
@@ -22,10 +38,15 @@ export default function RegisterPage() {
       title="Create your account"
       description="Set up a member profile for orders, addresses, wishlist items, and future drop alerts."
       footerText="Already have an account?"
-      footerLinkLabel="Go home"
-      footerLinkTo="/"
+      footerLinkLabel="Login"
+      footerLinkTo="/login"
       form={
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+              {error}
+            </div>
+          )}
           {[
             { label: "Full name", key: "name" as const, type: "text" },
             { label: "Email", key: "email" as const, type: "email" },

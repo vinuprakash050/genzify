@@ -45,26 +45,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setFirebaseUser(firebaseUser);
       
       if (firebaseUser) {
-        // Check if user exists in Firestore
         const userData = await userService.getUserByEmail(firebaseUser.email!);
         if (userData && userData.id) {
           const authUser: AuthUser = {
             id: userData.id,
             email: userData.email,
             name: userData.name,
-            avatar: userData.avatar,
-            role: userData.role
+            ...(userData.avatar ? { avatar: userData.avatar } : {}),
+            role: userData.role,
           };
           setUser(authUser);
         } else {
           // Create user in Firestore if doesn't exist
-          const newUser = {
+          const newUser: { email: string; name: string; avatar?: string } = {
             email: firebaseUser.email!,
             name: firebaseUser.displayName || firebaseUser.email!.split('@')[0],
-            avatar: firebaseUser.photoURL || undefined,
           };
+          if (firebaseUser.photoURL) {
+            newUser.avatar = firebaseUser.photoURL;
+          }
           const userId = await userService.createUser(newUser);
-          const createdUser: AuthUser = { id: userId, ...newUser };
+          const createdUser: AuthUser = { id: userId, email: newUser.email, name: newUser.name };
           setUser(createdUser);
         }
       } else {
@@ -114,14 +115,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         payload.password
       );
       
-      const newUser = {
+      // Never pass undefined to Firestore — omit avatar entirely if not present
+      const newUser: { email: string; name: string; avatar?: string } = {
         email: payload.email,
         name: payload.name,
-        avatar: userCredential.user.photoURL || undefined,
       };
+      if (userCredential.user.photoURL) {
+        newUser.avatar = userCredential.user.photoURL;
+      }
       
       const userId = await userService.createUser(newUser);
-      const createdUser = { id: userId, ...newUser };
+      const createdUser: AuthUser = { id: userId, email: newUser.email, name: newUser.name };
       
       setUser(createdUser);
       return createdUser;
