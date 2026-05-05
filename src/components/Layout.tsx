@@ -1,5 +1,6 @@
 'use client';
 
+import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import CartDrawer from "./CartDrawer";
 import LoginModal from "./LoginModal";
@@ -13,7 +14,19 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const pathname = usePathname();
   const uiTheme = useUiTheme();
+
+  // Admin pages get no Navbar, Footer, or cart/login overlays
+  const isAdmin = pathname.startsWith("/admin");
+
+  if (isAdmin) {
+    return (
+      <div className="min-h-screen">
+        {children}
+      </div>
+    );
+  }
 
   const spacingMap: Record<string, string> = {
     "transparent-float": "pt-28 sm:pt-32",

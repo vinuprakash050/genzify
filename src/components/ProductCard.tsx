@@ -3,7 +3,9 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { Heart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { useUiTheme } from "../hooks/useUiTheme";
 import { formatCurrency } from "../utils/format";
 
@@ -14,7 +16,9 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
   const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const uiTheme = useUiTheme();
+  const inWishlist = isInWishlist(product.id);
 
   const cardVariants = {
     "glass-lift": {
@@ -84,9 +88,18 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
               </h3>
             </Link>
           </div>
-          <span className="text-base sm:text-lg font-bold text-primary flex-shrink-0">
-            {formatCurrency(product.price)}
-          </span>
+          <div className="flex flex-col items-end gap-2 flex-shrink-0">
+            <span className="text-base sm:text-lg font-bold text-primary">
+              {formatCurrency(product.price)}
+            </span>
+            <button
+              onClick={() => toggleWishlist(product)}
+              aria-label={inWishlist ? "Remove from wishlist" : "Add to wishlist"}
+              className="text-white/40 hover:text-red-400 transition"
+            >
+              <Heart size={16} fill={inWishlist ? "currentColor" : "none"} className={inWishlist ? "text-red-400" : ""} />
+            </button>
+          </div>
         </div>
 
         <motion.button
