@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Heart, LogIn, ShoppingBag, User2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { categories } from "../data/products";
@@ -281,9 +281,18 @@ function EditorialRibbonHeader({
 }
 
 export default function Navbar() {
+  const uiTheme = useUiTheme();
+
+  return (
+    <Suspense fallback={null}>
+      <NavbarInner uiTheme={uiTheme} />
+    </Suspense>
+  );
+}
+
+function NavbarInner({ uiTheme }: { uiTheme: ReturnType<typeof useUiTheme> }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const uiTheme = useUiTheme();
   const [isCompact, setIsCompact] = useState(false);
 
   // Reads live from searchParams — updates whenever category changes without page reload

@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -9,7 +10,7 @@ import PageTransition from "@/components/PageTransition";
 import { categories, products as localProducts } from "@/data/products";
 import { fetchProducts } from "@/utils/api";
 
-export default function ProductsPage() {
+function ProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [catalog, setCatalog] = useState<any[]>([]);
@@ -78,5 +79,13 @@ export default function ProductsPage() {
         </div>
       </div>
     </PageTransition>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={null}>
+      <ProductsContent />
+    </Suspense>
   );
 }

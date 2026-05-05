@@ -1,12 +1,12 @@
 'use client';
 
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import PageIntro from "@/components/PageIntro";
 import ProductGrid from "@/components/ProductGrid";
 import { products } from "@/data/products";
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = (searchParams.get("q") || "").toLowerCase();
   const results = useMemo(
@@ -22,5 +22,13 @@ export default function SearchPage() {
     >
       <ProductGrid products={results.length ? results : products.slice(0, 6)} />
     </PageIntro>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={null}>
+      <SearchContent />
+    </Suspense>
   );
 }
