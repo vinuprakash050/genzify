@@ -19,7 +19,6 @@ function HeaderActions({ isCompact }: { isCompact: boolean }) {
   useEffect(() => {
     setMounted(true);
   }, []);
-
   return (
     <motion.div
       animate={{
@@ -46,7 +45,7 @@ function HeaderActions({ isCompact }: { isCompact: boolean }) {
         )}
       </motion.button>
 
-      {user ? (
+      {mounted && user ? (
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.push("/wishlist")}
@@ -57,7 +56,7 @@ function HeaderActions({ isCompact }: { isCompact: boolean }) {
           </button>
           <button
             onClick={() => router.push("/account")}
-            className="hidden rounded-full border border-primary/30 px-4 py-2 text-sm text-primary md:block"
+            className="rounded-full border border-primary/30 px-4 py-2 text-sm text-primary"
           >
             {user.name}
           </button>
@@ -146,6 +145,7 @@ function TransparentFloatHeader({
     >
       <motion.div
         animate={{ maxWidth: isCompact ? 1180 : 9999 }}
+        initial={{ maxWidth: 9999 }}
         transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
         className="mx-auto w-full"
       >
@@ -264,6 +264,14 @@ function EditorialRibbonHeader({
           paddingRight: isCompact ? 18 : 24,
           paddingTop: isCompact ? 12 : 16,
           paddingBottom: isCompact ? 12 : 16,
+        }}
+        initial={{
+          maxWidth: 1320,
+          borderRadius: 28,
+          paddingLeft: 24,
+          paddingRight: 24,
+          paddingTop: 16,
+          paddingBottom: 16,
         }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="glass-panel mx-auto"

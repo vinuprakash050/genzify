@@ -6,6 +6,7 @@ import LoginModal from "./LoginModal";
 import { useUiTheme } from "../hooks/useUiTheme";
 import Footer from "./Footer";
 import ScrollToTop from "./ScrollToTop";
+import ClientOnly from "./ClientOnly";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -27,8 +28,10 @@ export default function Layout({ children }: LayoutProps) {
       <Navbar />
       <main className={`relative z-10 flex-1 ${spacingClass}`}>{children}</main>
       <Footer />
-      <CartDrawer />
-      <LoginModal />
+      <ClientOnly>
+        <CartDrawer />
+        <LoginModal />
+      </ClientOnly>
     </div>
   );
 }

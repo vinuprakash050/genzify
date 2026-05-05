@@ -55,9 +55,9 @@ export default function CartDrawer() {
                   <p className="mt-2 muted-copy">Add a few oversized essentials to get started.</p>
                 </div>
               ) : (
-                items.map((item) => (
+                items.map((item, index) => (
                   <div
-                    key={`${item.id}-${item.size}`}
+                    key={`${item.id}-${item.size}-${index}`}
                     className="glass-panel flex gap-4 rounded-[1.75rem] p-4"
                   >
                     <img
