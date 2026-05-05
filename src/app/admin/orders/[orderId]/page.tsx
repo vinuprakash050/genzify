@@ -10,6 +10,12 @@ import SectionCard from "@/components/SectionCard";
 import { db } from "@/lib/firebase";
 import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
 import { formatCurrency } from "@/utils/format";
+import {
+  sendOrderShippedEmail,
+  sendOrderDeliveredEmail,
+  sendOrderCancelledEmail,
+  sendOrderRefundedEmail,
+} from "@/lib/emailjs";
 
 const statusOptions = ["pending", "paid", "packed", "shipped", "delivered", "cancelled", "refunded"];
 
@@ -45,11 +51,41 @@ function AdminOrderDetailContent() {
   async function handleSave() {
     setIsSaving(true);
     try {
+      const prevStatus = order.status;
       await updateDoc(doc(db, "orders", orderId), {
         status,
         trackingNumber: tracking,
         updatedAt: Timestamp.now(),
       });
+
+      // Send status-change emails
+      const emailBase = {
+        to_name: order.userName || "Customer",
+        to_email: order.userEmail || "",
+        order_id: orderId.slice(0, 12).toUpperCase(),
+        order_total: formatCurrency(order.total),
+      };
+
+      if (prevStatus !== status) {
+        if (status === "shipped") {
+          sendOrderShippedEmail({
+            ...emailBase,
+            tracking_number: tracking || "Pending",
+            shipping_address: order.shippingAddress || "",
+            delivery_method: order.deliveryMethod || "Standard",
+          });
+        } else if (status === "delivered") {
+          sendOrderDeliveredEmail(emailBase);
+        } else if (status === "cancelled") {
+          sendOrderCancelledEmail(emailBase);
+        } else if (status === "refunded") {
+          sendOrderRefundedEmail({
+            ...emailBase,
+            payment_id: order.paymentId || "",
+          });
+        }
+      }
+
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
