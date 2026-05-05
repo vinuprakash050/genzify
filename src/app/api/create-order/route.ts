@@ -1,10 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import Razorpay from "razorpay";
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,8 +8,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
 
+    const keyId = process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (!keyId || !keySecret) {
+      return NextResponse.json({ error: "Razorpay keys not configured" }, { status: 500 });
+    }
+
+    // Lazy import + instantiate inside handler so env vars are available at runtime
+    const Razorpay = (await import("razorpay")).default;
+    const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
+
     const order = await razorpay.orders.create({
-      amount: Math.round(amount * 100), // Razorpay expects paise (1 INR = 100 paise)
+      amount: Math.round(amount * 100), // paise
       currency,
       receipt: receipt || `receipt_${Date.now()}`,
     });
