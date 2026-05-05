@@ -25,7 +25,7 @@ function HeaderActions({ isCompact }: { isCompact: boolean }) {
         gap: isCompact ? 20 : 28,
       }}
       transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-      className="flex items-center gap-6 sm:gap-8"
+      className="flex items-center gap-3 sm:gap-6"
     >
       <motion.button
         whileTap={{ scale: 0.95 }}
@@ -34,7 +34,7 @@ function HeaderActions({ isCompact }: { isCompact: boolean }) {
           padding: isCompact ? 11 : 13,
         }}
         transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-        className="relative rounded-full border border-secondary/30 p-2 sm:p-3 text-secondary transition hover:shadow-glow"
+        className="relative rounded-full border border-secondary/30 p-2 text-secondary transition hover:shadow-glow"
         aria-label="Open cart"
       >
         <ShoppingBag size={16} />
@@ -49,32 +49,32 @@ function HeaderActions({ isCompact }: { isCompact: boolean }) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => router.push("/wishlist")}
-            className="rounded-full border border-white/10 p-3 text-white/80 transition hover:border-secondary/40 hover:text-secondary"
+            className="rounded-full border border-white/10 p-2 text-white/80 transition hover:border-secondary/40 hover:text-secondary"
             aria-label="Wishlist"
           >
-            <Heart size={18} />
+            <Heart size={16} />
           </button>
           <button
             onClick={() => router.push("/account")}
-            className="rounded-full border border-primary/30 px-4 py-2 text-sm text-primary"
+            className="max-w-[70px] sm:max-w-[120px] truncate rounded-full border border-primary/30 px-3 py-1.5 text-xs sm:text-sm text-primary"
           >
             {user.name}
           </button>
           <button
             onClick={logout}
-            className="rounded-full border border-white/10 p-3 text-white/80 transition hover:border-primary/50 hover:text-primary"
+            className="rounded-full border border-white/10 p-2 text-white/80 transition hover:border-primary/50 hover:text-primary"
             aria-label="Log out"
           >
-            <User2 size={18} />
+            <User2 size={16} />
           </button>
         </div>
       ) : (
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={openLogin}
-          className="flex items-center justify-center gap-2 rounded-full border border-primary/30 px-4 py-2.5 text-sm text-primary transition hover:shadow-glow-primary"
+          className="flex items-center justify-center gap-2 rounded-full border border-primary/30 px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm text-primary transition hover:shadow-glow-primary"
         >
-          <LogIn size={16} />
+          <LogIn size={14} />
           Login
         </motion.button>
       )}
