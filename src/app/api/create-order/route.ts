@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
+      keyId: keyId, // safe to return — it's the public key ID, not the secret
     });
   } catch (error: any) {
     console.error("Razorpay order creation error:", error);

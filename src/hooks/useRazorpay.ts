@@ -60,11 +60,11 @@ export function useRazorpay() {
       return;
     }
 
-    const { orderId, amount, currency } = await res.json();
+    const { orderId, amount, currency, keyId } = await res.json();
 
     // Step 2: Open Razorpay checkout modal
     const rzp = new window.Razorpay({
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      key: keyId,
       amount,
       currency,
       name: options.name,
