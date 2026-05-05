@@ -5,6 +5,7 @@ import CartDrawer from "./CartDrawer";
 import LoginModal from "./LoginModal";
 import { useUiTheme } from "../hooks/useUiTheme";
 import Footer from "./Footer";
+import ScrollToTop from "./ScrollToTop";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -21,7 +22,8 @@ export default function Layout({ children }: LayoutProps) {
   const spacingClass = spacingMap[uiTheme.headerStyle as string] ?? "pt-28 sm:pt-32";
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden">
+    <div className="relative flex min-h-screen flex-col">
+      <ScrollToTop />
       <Navbar />
       <main className={`relative z-10 flex-1 ${spacingClass}`}>{children}</main>
       <Footer />

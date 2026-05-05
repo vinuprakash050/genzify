@@ -49,9 +49,8 @@
     margin: 0;
     min-width: 320px;
     min-height: 100vh;
-    /* Full-page background — covers entire scroll height */
+    /* Full-page background — fixed causes scroll jank on mobile, use scroll instead */
     background: var(--theme-page-background);
-    background-attachment: fixed;
     color: var(--color-text) !important;
     font-family: var(--font-family-display);
     -webkit-font-smoothing: antialiased;
@@ -98,7 +97,16 @@
     background:      var(--theme-panel-background);
     border:          1px solid var(--theme-panel-border);
     backdrop-filter: blur(var(--theme-panel-blur));
+    -webkit-backdrop-filter: blur(var(--theme-panel-blur));
     box-shadow:      var(--theme-panel-shadow);
+  }
+
+  /* Reduce blur on mobile for performance */
+  @media (max-width: 768px) {
+    .glass-panel {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
   }
 
   .glass-button {

@@ -14,6 +14,11 @@ function HeaderActions({ isCompact }: { isCompact: boolean }) {
   const router = useRouter();
   const { user, logout, openLogin } = useAuth();
   const { itemCount, openCart } = useCart();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <motion.div
@@ -34,7 +39,7 @@ function HeaderActions({ isCompact }: { isCompact: boolean }) {
         aria-label="Open cart"
       >
         <ShoppingBag size={16} />
-        {itemCount > 0 && (
+        {mounted && itemCount > 0 && (
           <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[11px] font-bold text-black">
             {itemCount}
           </span>

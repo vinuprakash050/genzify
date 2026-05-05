@@ -12,7 +12,7 @@ interface PageIntroProps {
 
 function PageIntro({ eyebrow, title, description, children, className = "" }: PageIntroProps) {
   return (
-    <PageTransition className={`px-4 pb-20 pt-8 sm:px-6 lg:px-10 ${className}`}>
+    <PageTransition className={`px-4 pb-20 pt-14 sm:px-6 sm:pt-16 lg:px-10 ${className}`}>
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 max-w-3xl">
           <p className="text-sm uppercase tracking-[0.4em] text-secondary">{eyebrow}</p>

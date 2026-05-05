@@ -23,18 +23,14 @@ export default function ProductGrid({ products }: ProductGridProps) {
           <motion.div
             key={product.id}
             layout
-            initial={
-              uiTheme.cardStyle === "tech-tilt"
-                ? { opacity: 0, y: 20, scale: 0.98 }
-                : { opacity: 0, y: 20 }
-            }
+            initial={{ opacity: 0, y: 20 }}
             animate={
               uiTheme.cardStyle === "monolith-stack" && index % 3 === 1
                 ? { opacity: 1, y: 18 }
-                : { opacity: 1, y: 0, scale: 1 }
+                : { opacity: 1, y: 0 }
             }
             exit={{ opacity: 0, y: 16 }}
-            transition={{ delay: index * 0.04 }}
+            transition={{ delay: Math.min(index * 0.04, 0.3) }}
             className={uiTheme.gridStyle === "offset" && index % 3 === 1 ? "xl:pt-10" : ""}
           >
             <ProductCard product={product} priority={index < 2} />

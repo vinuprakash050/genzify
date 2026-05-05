@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useUiTheme } from "../hooks/useUiTheme";
 import { formatCurrency } from "../utils/format";
@@ -19,7 +20,8 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
     "glass-lift": {
       articleClass: "glass-panel group overflow-hidden rounded-[2rem]",
       hover: { y: -8, scale: 1.01 },
-      imageClass: "h-80 w-full object-cover transition duration-500 group-hover:scale-105",
+      imageWrapClass: "relative h-80 w-full overflow-hidden",
+      imageClass: "object-cover transition duration-500 group-hover:scale-105",
       contentClass: "space-y-4 p-5",
       buttonClass:
         "w-full rounded-2xl border border-secondary/35 px-4 py-3 font-semibold text-secondary transition hover:shadow-glow",
@@ -28,8 +30,9 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
       articleClass:
         "group overflow-hidden rounded-md border border-secondary/25 bg-black/35 shadow-[0_18px_42px_rgba(0,0,0,0.35)]",
       hover: { y: -10, rotateX: -4, rotateY: 3 },
+      imageWrapClass: "relative h-72 w-full overflow-hidden",
       imageClass:
-        "h-72 w-full object-cover saturate-75 transition duration-500 group-hover:scale-[1.08] group-hover:saturate-100",
+        "object-cover saturate-75 transition duration-500 group-hover:scale-[1.08] group-hover:saturate-100",
       contentClass: "space-y-4 border-t border-white/5 p-5",
       buttonClass:
         "w-full rounded-md border border-primary/45 bg-primary/8 px-4 py-3 font-semibold uppercase tracking-[0.2em] text-primary transition hover:border-secondary hover:text-secondary",
@@ -38,8 +41,9 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
       articleClass:
         "group overflow-hidden rounded-[2.4rem] border border-white/10 bg-white/[0.04] shadow-[0_24px_60px_rgba(0,0,0,0.38)]",
       hover: { y: -6, scale: 1.015 },
+      imageWrapClass: "relative h-[22rem] w-full overflow-hidden",
       imageClass:
-        "h-[22rem] w-full object-cover grayscale-[0.08] transition duration-700 group-hover:scale-105",
+        "object-cover grayscale-[0.08] transition duration-700 group-hover:scale-105",
       contentClass: "space-y-5 p-6",
       buttonClass:
         "w-full rounded-full border border-secondary/30 px-4 py-3 font-semibold text-secondary transition hover:bg-secondary hover:text-black",
@@ -56,12 +60,16 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
       style={{ transformStyle: "preserve-3d" }}
     >
       <Link href={`/product/${product.id}`} className="block overflow-hidden">
-        <img
-          src={product.image}
-          alt={product.name}
-          loading={priority ? "eager" : "lazy"}
-          className={styles.imageClass}
-        />
+        <div className={styles.imageWrapClass}>
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority={priority}
+            className={styles.imageClass}
+          />
+        </div>
       </Link>
 
       <div className={styles.contentClass}>
