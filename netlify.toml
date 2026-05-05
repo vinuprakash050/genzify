@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Tell Netlify secrets scanner to skip these keys
+# NEXT_PUBLIC_* vars are intentionally embedded in the client bundle
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_RAZORPAY_KEY_ID,NEXT_PUBLIC_EMAILJS_SERVICE_ID,NEXT_PUBLIC_EMAILJS_PUBLIC_KEY,NEXT_PUBLIC_EMAILJS_ORDER_TEMPLATE_ID"

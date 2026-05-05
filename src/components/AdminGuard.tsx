@@ -13,16 +13,23 @@ export function useAdminAuth() {
     setIsAuthed(sessionStorage.getItem(ADMIN_KEY) === "true");
   }, []);
 
-  function login(username: string, password: string): boolean {
-    if (
-      username === process.env.NEXT_PUBLIC_ADMIN_USERNAME &&
-      password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD
-    ) {
-      sessionStorage.setItem(ADMIN_KEY, "true");
-      setIsAuthed(true);
-      return true;
+  async function login(username: string, password: string): Promise<boolean> {
+    try {
+      const res = await fetch("/api/admin-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        sessionStorage.setItem(ADMIN_KEY, "true");
+        setIsAuthed(true);
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
     }
-    return false;
   }
 
   function logout() {
@@ -54,12 +61,11 @@ export default function AdminGuard({ children }: AdminGuardProps) {
           <p className="mt-2 muted-copy text-sm">Enter admin credentials to continue.</p>
 
           <form
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               setError("");
-              if (!login(username, password)) {
-                setError("Invalid username or password.");
-              }
+              const ok = await login(username, password);
+              if (!ok) setError("Invalid username or password.");
             }}
             className="mt-6 space-y-4"
           >
