@@ -14,10 +14,17 @@ function init() {
 
 async function send(params: Record<string, string>) {
   init();
+  console.log("[EmailJS] Attempting to send email:", {
+    serviceId: SERVICE_ID,
+    templateId: TEMPLATE_ID,
+    to: params.to_email,
+    subject: params.email_subject,
+  });
   try {
-    await emailjs.send(SERVICE_ID, TEMPLATE_ID, params);
-  } catch (err) {
-    console.error("EmailJS error:", err);
+    const result = await emailjs.send(SERVICE_ID, TEMPLATE_ID, params);
+    console.log("[EmailJS] ✅ Email sent successfully:", result);
+  } catch (err: any) {
+    console.error("[EmailJS] ❌ Failed to send email:", err?.text || err?.message || err);
   }
 }
 
