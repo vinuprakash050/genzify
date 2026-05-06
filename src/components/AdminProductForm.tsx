@@ -8,9 +8,8 @@ import AdminGuard from "./AdminGuard";
 import CustomSelect from "./CustomSelect";
 import SectionCard from "./SectionCard";
 import { categories } from "@/data/products";
-import { db, storage } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, addDoc, collection, Timestamp } from "firebase/firestore";
-import { ref, uploadString, getDownloadURL } from "firebase/storage";
 import Cropper from "react-easy-crop";
 
 interface AdminProductFormProps {
@@ -97,6 +96,26 @@ function AdminProductFormContent({ productId }: AdminProductFormProps) {
     });
   }
 
+  async function uploadToImgBB(base64: string): Promise<string> {
+    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+    if (!apiKey) throw new Error("ImgBB API key not configured");
+
+    // Strip the data:image/...;base64, prefix
+    const base64Data = base64.split(",")[1];
+
+    const formData = new FormData();
+    formData.append("image", base64Data);
+
+    const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error("ImgBB upload failed: " + data.error?.message);
+    return data.data.url; // permanent direct image URL
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name || !form.price) { setError("Name and price are required."); return; }
@@ -107,13 +126,11 @@ function AdminProductFormContent({ productId }: AdminProductFormProps) {
     try {
       let imageUrl = form.image;
 
-      // Upload image to Firebase Storage if a new one was selected
+      // Upload image to ImgBB if a new one was selected
       if (imageSrc && imageSrc !== form.image) {
         const cropped = await getCroppedImageData();
         if (cropped) {
-          const storageRef = ref(storage, `products/${Date.now()}.webp`);
-          await uploadString(storageRef, cropped, "data_url");
-          imageUrl = await getDownloadURL(storageRef);
+          imageUrl = await uploadToImgBB(cropped);
         }
       }
 
