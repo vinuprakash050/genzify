@@ -1,8 +1,8 @@
 import emailjs from "@emailjs/browser";
 
-const SERVICE_ID   = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!;
-const PUBLIC_KEY   = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!;
-const TEMPLATE_ID  = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ORDER_CONFIRM!; // single reusable template
+const SERVICE_ID   = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_n8z558f";
+const PUBLIC_KEY   = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "laLOkTni-8VTBG-e9";
+const TEMPLATE_ID  = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ORDER_CONFIRM || "template_ro6bjob";
 
 let initialized = false;
 function init() {
