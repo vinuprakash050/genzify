@@ -10,6 +10,18 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'i.ibb.co',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ibb.co',
+        port: '',
+        pathname: '/**',
+      },
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [390, 640, 750, 828, 1080, 1200, 1920],

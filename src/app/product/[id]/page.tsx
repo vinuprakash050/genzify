@@ -1,26 +1,63 @@
 'use client';
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { formatCurrency } from "@/utils/format";
 import PageTransition from "@/components/PageTransition";
+import ClientOnly from "@/components/ClientOnly";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { products as localProducts } from "@/data/products";
 
 const sizes = ["S", "M", "L", "XL"];
 
-export default function ProductDetailPage() {
+function ProductDetailContent() {
   const params = useParams();
   const productId = params.id as string;
   const { addToCart } = useCart();
   const [selectedSize, setSelectedSize] = useState("M");
+  const [product, setProduct] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const product = useMemo(
-    () => products.find((item) => item.id === productId),
-    [productId],
-  );
+  useEffect(() => {
+    async function loadProduct() {
+      try {
+        // Try Firestore first (Firestore auto-generated ID)
+        const snap = await getDoc(doc(db, "products", productId));
+        if (snap.exists()) {
+          setProduct({ id: snap.id, ...snap.data() });
+          return;
+        }
+        // Fallback: check local products (for seeded products with ts-001 etc.)
+        const local = localProducts.find((p) => p.id === productId);
+        if (local) {
+          setProduct(local);
+          return;
+        }
+        setProduct(null);
+      } catch (err) {
+        // Firestore failed — try local fallback
+        const local = localProducts.find((p) => p.id === productId);
+        setProduct(local || null);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadProduct();
+  }, [productId]);
+
+  if (isLoading) {
+    return (
+      <PageTransition className="px-4 py-20 sm:px-6 lg:px-10">
+        <div className="glass-panel mx-auto max-w-2xl rounded-[2rem] p-8 text-center">
+          <p className="muted-copy">Loading product...</p>
+        </div>
+      </PageTransition>
+    );
+  }
 
   if (!product) {
     return (
@@ -28,16 +65,15 @@ export default function ProductDetailPage() {
         <div className="glass-panel mx-auto max-w-2xl rounded-[2rem] p-8 text-center">
           <p className="text-sm uppercase tracking-[0.35em] text-secondary">Not Found</p>
           <h1 className="mt-3 text-4xl font-black uppercase">Product unavailable</h1>
-          <Link
-            href="/products"
-            className="mt-6 inline-flex rounded-full border border-primary/30 px-6 py-3 text-primary"
-          >
+          <Link href="/products" className="mt-6 inline-flex rounded-full border border-primary/30 px-6 py-3 text-primary">
             Back to catalog
           </Link>
         </div>
       </PageTransition>
     );
   }
+
+  const productSizes = product.sizes || sizes;
 
   return (
     <PageTransition className="px-4 pb-20 pt-8 sm:px-6 lg:px-10">
@@ -47,7 +83,11 @@ export default function ProductDetailPage() {
           animate={{ opacity: 1, x: 0 }}
           className="glass-panel overflow-hidden rounded-[2.5rem]"
         >
-          <img src={product.image} alt={product.name} className="h-full min-h-[28rem] w-full object-cover" />
+          <img
+            src={product.image}
+            alt={product.name}
+            className="h-full min-h-[28rem] w-full object-cover"
+          />
         </motion.div>
 
         <motion.div
@@ -61,13 +101,16 @@ export default function ProductDetailPage() {
           </h1>
           <p className="mt-4 text-3xl font-bold text-primary">{formatCurrency(product.price)}</p>
           <p className="mt-6 max-w-xl leading-8 muted-copy">
-            Sculpted for oversized comfort with a premium silhouette and a modular frontend experience ready to connect to product, shipping, and order services.
+            {product.description || "Sculpted for oversized comfort with a premium silhouette."}
           </p>
+          {product.fabric && (
+            <p className="mt-2 text-sm muted-copy">{product.fabric}</p>
+          )}
 
           <div className="mt-8">
             <p className="mb-3 text-sm uppercase tracking-[0.35em] text-secondary">Select Size</p>
             <div className="flex flex-wrap gap-3">
-              {sizes.map((size) => (
+              {productSizes.map((size: string) => (
                 <button
                   key={size}
                   onClick={() => setSelectedSize(size)}
@@ -101,5 +144,19 @@ export default function ProductDetailPage() {
         </motion.div>
       </div>
     </PageTransition>
+  );
+}
+
+export default function ProductDetailPage() {
+  return (
+    <ClientOnly fallback={
+      <PageTransition className="px-4 py-20 sm:px-6 lg:px-10">
+        <div className="glass-panel mx-auto max-w-2xl rounded-[2rem] p-8 text-center">
+          <p className="muted-copy">Loading...</p>
+        </div>
+      </PageTransition>
+    }>
+      <ProductDetailContent />
+    </ClientOnly>
   );
 }
