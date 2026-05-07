@@ -16,7 +16,7 @@ import { sendOrderConfirmationEmail } from "@/lib/emailjs";
 function CheckoutContent() {
   const router = useRouter();
   const { items, totalPrice, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, openLogin } = useAuth();
   const { isLoaded, openRazorpay } = useRazorpay();
   const [isPlacing, setIsPlacing] = useState(false);
   const [error, setError] = useState("");
@@ -133,7 +133,6 @@ function CheckoutContent() {
   }
 
   async function handlePayment() {
-    if (!user) { setError("Please log in to place an order."); return; }
     if (items.length === 0) { setError("Your cart is empty."); return; }
     if (!form.firstName || !form.address || !form.city) {
       setError("Please fill in your shipping address.");
@@ -173,9 +172,31 @@ function CheckoutContent() {
     });
   }
 
+  // Gate: require login before showing checkout
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-md py-10 text-center space-y-6">
+        <div className="glass-panel rounded-[2rem] p-8 space-y-5">
+          <p className="text-sm uppercase tracking-[0.35em] text-secondary">Members Only</p>
+          <h2 className="text-2xl font-bold text-white">Sign in to continue</h2>
+          <p className="muted-copy text-sm">You need to be logged in to place an order.</p>
+          <button
+            onClick={openLogin}
+            className="glass-button w-full rounded-full px-6 py-3 font-bold"
+          >
+            Login to Checkout
+          </button>
+          <p className="text-sm muted-copy">
+            No account?{" "}
+            <a href="/register" className="text-primary">Create one</a>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_24rem]">
-      <div className="space-y-6">
+    <div className="grid gap-8 lg:grid-cols-[1fr_24rem]">      <div className="space-y-6">
         <SectionCard>
           <div className="flex items-center justify-between">
             <p className="text-sm uppercase tracking-[0.35em] text-secondary">Shipping Address</p>
@@ -300,11 +321,7 @@ function CheckoutContent() {
           </button>
         </div>
 
-        {!user && (
-          <p className="mt-3 text-center text-sm muted-copy">
-            <a href="/login" className="text-primary">Log in</a> to place an order.
-          </p>
-        )}
+
       </SectionCard>
     </div>
   );
