@@ -269,7 +269,7 @@ function AdminProductFormContent({ productId }: AdminProductFormProps) {
                   image={imageSrc}
                   crop={crop}
                   zoom={zoom}
-                  aspect={3 / 4}
+                  aspect={1}
                   onCropChange={setCrop}
                   onZoomChange={setZoom}
                   onCropComplete={onCropComplete}

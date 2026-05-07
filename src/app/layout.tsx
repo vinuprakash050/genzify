@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import ThemeProvider from "./theme-provider";
 import Layout from "@/components/Layout";
 import ScrollToTop from "@/components/ScrollToTop";
+import NavigationProgress from "@/components/NavigationProgress";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <NavigationProgress />
         <ThemeProvider>
           <ScrollToTop />
           <Layout>{children}</Layout>
