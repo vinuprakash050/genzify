@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import ProductGrid from "@/components/ProductGrid";
 import SectionHeader from "@/components/SectionHeader";
 import PageTransition from "@/components/PageTransition";
-import { categories, products as localProducts } from "@/data/products";
+import { categories } from "@/data/products";
 import { fetchProducts } from "@/utils/api";
 
 function ProductsContent() {

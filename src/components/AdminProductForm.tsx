@@ -81,17 +81,32 @@ function AdminProductFormContent({ productId }: AdminProductFormProps) {
   }
 
   async function getCroppedImageData(): Promise<string | null> {
-    if (!imageSrc || !croppedAreaPixels) return imageSrc;
+    if (!imageSrc) return null;
+    // If no crop interaction happened, return original image as-is
+    if (!croppedAreaPixels) return imageSrc;
+
     return new Promise((resolve) => {
       const image = new Image();
+      image.crossOrigin = "anonymous";
       image.src = imageSrc!;
       image.onload = () => {
         const canvas = document.createElement("canvas");
-        canvas.width = 900;
-        canvas.height = 900;
+        // Preserve the cropped area's natural aspect ratio
+        canvas.width = croppedAreaPixels.width;
+        canvas.height = croppedAreaPixels.height;
         const ctx = canvas.getContext("2d")!;
-        ctx.drawImage(image, croppedAreaPixels.x, croppedAreaPixels.y, croppedAreaPixels.width, croppedAreaPixels.height, 0, 0, 900, 900);
-        resolve(canvas.toDataURL("image/webp", 0.85));
+        ctx.drawImage(
+          image,
+          croppedAreaPixels.x,
+          croppedAreaPixels.y,
+          croppedAreaPixels.width,
+          croppedAreaPixels.height,
+          0,
+          0,
+          croppedAreaPixels.width,
+          croppedAreaPixels.height,
+        );
+        resolve(canvas.toDataURL("image/webp", 0.9));
       };
     });
   }
@@ -113,7 +128,7 @@ function AdminProductFormContent({ productId }: AdminProductFormProps) {
 
     const data = await res.json();
     if (!data.success) throw new Error("ImgBB upload failed: " + data.error?.message);
-    return data.data.url; // permanent direct image URL
+    return data.data.url;
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -264,12 +279,12 @@ function AdminProductFormContent({ productId }: AdminProductFormProps) {
 
           {imageSrc && (
             <div className="sm:col-span-2 space-y-3">
-              <div className="relative h-[360px] w-full overflow-hidden rounded-2xl bg-black">
+              <div className="relative h-[480px] w-full overflow-hidden rounded-2xl bg-black">
                 <Cropper
                   image={imageSrc}
                   crop={crop}
                   zoom={zoom}
-                  aspect={1}
+                  aspect={3 / 4}
                   onCropChange={setCrop}
                   onZoomChange={setZoom}
                   onCropComplete={onCropComplete}

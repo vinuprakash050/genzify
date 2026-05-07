@@ -10,7 +10,6 @@ import PageTransition from "@/components/PageTransition";
 import ClientOnly from "@/components/ClientOnly";
 import { db } from "@/lib/firebase";
 import { doc, getDoc } from "firebase/firestore";
-import { products as localProducts } from "@/data/products";
 
 const sizes = ["S", "M", "L", "XL"];
 
@@ -25,23 +24,15 @@ function ProductDetailContent() {
   useEffect(() => {
     async function loadProduct() {
       try {
-        // Try Firestore first (Firestore auto-generated ID)
         const snap = await getDoc(doc(db, "products", productId));
         if (snap.exists()) {
           setProduct({ id: snap.id, ...snap.data() });
-          return;
+        } else {
+          setProduct(null);
         }
-        // Fallback: check local products (for seeded products with ts-001 etc.)
-        const local = localProducts.find((p) => p.id === productId);
-        if (local) {
-          setProduct(local);
-          return;
-        }
-        setProduct(null);
       } catch (err) {
-        // Firestore failed — try local fallback
-        const local = localProducts.find((p) => p.id === productId);
-        setProduct(local || null);
+        console.error("Error loading product:", err);
+        setProduct(null);
       } finally {
         setIsLoading(false);
       }

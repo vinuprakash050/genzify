@@ -1,17 +1,23 @@
 'use client';
 
-import { Suspense, useMemo } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import PageIntro from "@/components/PageIntro";
 import ProductGrid from "@/components/ProductGrid";
-import { products } from "@/data/products";
+import { fetchProducts } from "@/utils/api";
 
 function SearchContent() {
   const searchParams = useSearchParams();
   const query = (searchParams.get("q") || "").toLowerCase();
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchProducts().then(setAllProducts);
+  }, []);
+
   const results = useMemo(
-    () => products.filter((product) => product.name.toLowerCase().includes(query)),
-    [query],
+    () => allProducts.filter((product) => product.name.toLowerCase().includes(query)),
+    [query, allProducts],
   );
 
   return (
@@ -20,7 +26,7 @@ function SearchContent() {
       title={`Results for "${query || "all"}"`}
       description="A placeholder search results page ready for catalog search endpoints and filters."
     >
-      <ProductGrid products={results.length ? results : products.slice(0, 6)} />
+      <ProductGrid products={results.length ? results : allProducts.slice(0, 6)} />
     </PageIntro>
   );
 }

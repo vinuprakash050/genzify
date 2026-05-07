@@ -1,17 +1,21 @@
 'use client';
 
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import HeroSection from "@/components/HeroSection";
 import SectionHeader from "@/components/SectionHeader";
 import ProductGrid from "@/components/ProductGrid";
 import PageTransition from "@/components/PageTransition";
-import { products } from "@/data/products";
+import { fetchProducts } from "@/utils/api";
 import { useUiTheme } from "@/hooks/useUiTheme";
 
 export default function HomePage() {
-  const featuredProducts = useMemo(() => products.slice(0, 6), []);
+  const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
   const uiTheme = useUiTheme();
+
+  useEffect(() => {
+    fetchProducts().then((all) => setFeaturedProducts(all.slice(0, 6)));
+  }, []);
 
   const sectionWrapClass = {
     "split-glass": "px-4 pb-20 pt-10 sm:px-6 lg:px-10",
