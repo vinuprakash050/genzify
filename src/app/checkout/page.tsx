@@ -148,8 +148,8 @@ function CheckoutContent() {
       name: "Genzify",
       description: `Order of ${items.length} item${items.length > 1 ? "s" : ""}`,
       prefill: {
-        name: user.name,
-        email: user.email,
+        name: user!.name,
+        email: user!.email,
         contact: form.phone,
       },
       onSuccess: async (paymentId, razorpayOrderId) => {
